@@ -1,0 +1,16 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{5B0388A5-499C-3109-3A44-4BBD776D91B4}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "ARSandBox",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
+	]
+}
