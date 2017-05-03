@@ -13,7 +13,7 @@ AImageProcessor::AImageProcessor()
 
 void AImageProcessor::imageFiltering(TArray<int> &depthValue)
 {
-	for (int i = 0; i < mapHeight; i++)
+	/*for (int i = 0; i < mapHeight; i++)
 	{
 		for (int j = 0; j < mapWidth; j++)
 		{
@@ -23,7 +23,7 @@ void AImageProcessor::imageFiltering(TArray<int> &depthValue)
 				depthValue[index] = 0;
 			}
 		}
-	}
+	}*/
 }
 
 TArray<int> AImageProcessor::pixelFilter(const DepthFrame &depthFrame)
@@ -40,7 +40,7 @@ TArray<int> AImageProcessor::pixelFilter(const DepthFrame &depthFrame)
 		// 处理一行像素中的每个像素
 		for (int depthArrayColumnIndex = 0; depthArrayColumnIndex < depthFrame.mapWidth; depthArrayColumnIndex++)
 		{
-			int depthIndex = depthArrayColumnIndex + (depthArrayRowIndex * 512);
+			depthIndex = depthArrayColumnIndex + (depthArrayRowIndex * depthFrame.mapWidth);
 
 			// 我们认为深度值为0的像素即为候选像素
 			if (depthFrame.depthValue[depthIndex] == 0)
@@ -77,10 +77,9 @@ TArray<int> AImageProcessor::pixelFilter(const DepthFrame &depthFrame)
 							int ySearch = y + yi;
 
 							// 检查操作像素的位置是否超过了图像的边界（候选像素在图像的边缘）
-							if (xSearch >= 0 && xSearch <= widthBound &&
-								ySearch >= 0 && ySearch <= heightBound)
+							if(depthFrame.checkInRealMap(xSearch,ySearch))
 							{
-								int index = xSearch + (ySearch * 512);
+								int index = xSearch + (ySearch * depthFrame.mapWidth);
 								// 我们只要非零量
 								if (depthFrame.depthValue[index] != 0)
 								{
@@ -133,18 +132,17 @@ TArray<int> AImageProcessor::pixelFilter(const DepthFrame &depthFrame)
 							frequency = filterCollection[i][1];
 						}
 					}
-
-					smoothDepthArray[depthIndex] = depth;
+					smoothDepthArray.Add(depth);
 				}
 				else
 				{
-					smoothDepthArray[depthIndex] = 0;
+					smoothDepthArray.Add(0);
 				}
 			}
 			else
 			{
 				// 如果像素的深度值不为零，保持原深度值
-				smoothDepthArray[depthIndex] = depthFrame.depthValue[depthIndex];
+				smoothDepthArray.Add(depthFrame.depthValue[depthIndex]);
 			}
 		}
 	}

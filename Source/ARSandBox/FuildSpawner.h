@@ -26,10 +26,6 @@ private:
 	bool initFlag = false;
 	void loadParticle();
 
-	const int mapHeight = 640;
-	const int mapWidth = 640;
-	const int realHeight = 480;
-
 //check position
 	TMap<int, int> depthPointCount;;
 	TMap<int, int> intervalPointCount;

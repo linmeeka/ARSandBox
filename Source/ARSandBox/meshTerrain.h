@@ -2,41 +2,34 @@
 
 #pragma once
 
-#include "DepthFrame.h"
-#include "ReliefMap.h"
-#include "ImageProcessor.h"
-#include "FuildSpawner.h"
-#include "CollisionSpawner.h"
-#include "GameFramework/Actor.h"
 #include "RuntimeMeshObjectBase.h"
-#include "testTerrain.generated.h"
+#include "meshTerrain.generated.h"
 
 /**
  * 
  */
-class ACollisionSpawner;
 UCLASS()
-class ARSANDBOX_API AtestTerrain : public ARuntimeMeshObjectBase
+class ARSANDBOX_API AmeshTerrain : public ARuntimeMeshObjectBase
 {
 	GENERATED_BODY()
 
 // terrain
 
 private:
-	
+
 	TArray<FVector> Vertices;
 	TArray<FVector> Normals;
 	TArray<FRuntimeMeshTangent> Tangents;
 	TArray<FColor> VertexColors;
 	TArray<FVector2D> TextureCoordinates;
 	TArray<int32> Triangles;
-	
+
 	bool bGenerated;
 	FBox BoundingBox;
 
 public:
 	// Sets default values for this actor's properties
-	AtestTerrain(); 
+	AmeshTerrain();
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	// Called every frame
@@ -48,50 +41,19 @@ public:
 	float scalingFactor = 10;
 	float Height = 20;
 
+//size
+	int mapWidth = 640;
+	int mapHeight = 640;
+	const int mapLength = 640;
+	const int HalfWidth = 320;
+	const int HalfLength = 320;
 
-// relief map
+	// relief map
 private:
-	int depthScale = 1;
-
-	int sumNumber = 409600;
-
 	UMaterial *terrainMaterial;
 	UMaterialInstanceDynamic *DynamicMaterial;
 	void initMaterial();
 
-	ReliefMap *reliefMapSpawner=new ReliefMap();
-
-// counter
-	TArray<int> counterFlag;
-
-
-//fluid
-	ACollisionSpawner *collisionSpawner = new ACollisionSpawner();
-
-	const int basinTreshold = 40;
-//	void setCollisionBody();
-
-	TArray<FVector> verticesLow, verticesHigh;
-//	void spawnFuild();
-	AFuildSpawner *fuildSpawner;
-
-//Filter
-	AImageProcessor *imageProcessor = new AImageProcessor();
-
-//test
-	void setCircle(int i, int j, int tmp);
-	void setTestDepthValue();
-	int calLength(int x, int y);
-
-	void setEdge();
-
-	void calDepthSumPoint(int threshold);
-
-	//counter
-	const int counterNumber = 10;
-	int minDepthValue, maxDepthValue;
-	TArray<int> counterValue;
-	int realHeight = 480;
 
 public:
 	void clearCollisionBody();
@@ -104,4 +66,11 @@ public:
 	}
 
 	void updateMeshTerrain(const DepthFrame &depthFrame);
+
+	//test
+	void setCircle(int i, int j, int tmp);
+	void setTestDepthValue();
+	int calLength(int x, int y);
+	void setEdge();
+	void calDepthSumPoint(int threshold);
 };

@@ -8,7 +8,7 @@
 #include "ImageProcessor.h"
 #include "FuildSpawner.h"
 #include "CollisionSpawner.h"
-#include "testTerrain.h"
+#include "meshTerrain.h"
 #include "GameFramework/Actor.h"
 #include "WorldController.generated.h"
 
@@ -47,7 +47,7 @@ private:
 	ReliefMap *reliefMapSpawner = new ReliefMap();
 
 	// meshTerrain
-	AtestTerrain *meshTerrain;
+	AmeshTerrain *meshTerrain;
 	void getTestTerrain();
 
 	//collision
@@ -56,6 +56,7 @@ private:
 
 	//fuild
 	void spawnFuild();
+	void getFuildSpawner();
 	AFuildSpawner *fuildSpawner;
 	const int basinTreshold = 40;
 };

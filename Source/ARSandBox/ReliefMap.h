@@ -12,15 +12,11 @@ public:
 	~ReliefMap();
 
 public:
-	void setVertexColorsByThreshold(TArray<FColor> &VertexColors,const TArray<int> &depthValue);
+	void setVertexColorsByThreshold(TArray<FColor> &VertexColors, const DepthFrame &depthFrame);
 	void setVertexColorsByGradient(TArray<FColor> &VertexColors, const DepthFrame &depthFrame);
 	void drawCounter(TArray<FColor> &VertexColors, const DepthFrame &depthFrame);
 
 private:
-	int mapHeight = 640;
-	int mapWidth = 640;
-	int realHeight = 480;
-
 	void initColor();
 
 //ReliefMap
@@ -37,11 +33,6 @@ private:
 	int minDepthValue, maxDepthValue;
 	TArray<int> counterValue;
 
-	void setMaxAndMin(const TArray<int> &depthValue);
+	void setMaxAndMin(const DepthFrame &depthFrame);
 	void calCounterValue();
-
-//test
-	int tmpDepth;
-	FColor tmpColor;
-	double rate;
 };

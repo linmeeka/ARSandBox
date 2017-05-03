@@ -5,14 +5,14 @@
 
 DepthFrame::DepthFrame()
 {
-	depthValue.Init(0, 307200);
+	depthValue.Init(0, 640*640);
 }
 
 DepthFrame::~DepthFrame()
 {
 }
 
-bool DepthFrame::checkInRealMap(int x, int y)
+bool DepthFrame::checkInRealMap(int x, int y) const
 {
 	if (x < 0 || x >= realHeight || y < 0 || y >= mapWidth)
 		return false;
@@ -20,7 +20,7 @@ bool DepthFrame::checkInRealMap(int x, int y)
 		return true;
 }
 
-bool DepthFrame::checkInMap(int x, int y)
+bool DepthFrame::checkInMap(int x, int y) const
 {
 	if (x < 0 || x >= mapHeight || y < 0 || y >= mapWidth)
 		return false;

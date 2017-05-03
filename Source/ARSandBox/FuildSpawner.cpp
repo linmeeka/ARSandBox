@@ -28,8 +28,8 @@ void AFuildSpawner::Tick(float DeltaTime)
 
 void AFuildSpawner::loadParticle()
 {
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> MyParticleSystem(TEXT("ParticleSystem'/Game/TestPackages/Flex/flexTestEmitterSurfaceSlower.flexTestEmitterSurfaceSlower'"));
-//	static ConstructorHelpers::FObjectFinder<UParticleSystem> MyParticleSystem(TEXT("ParticleSystem'/Game/StarterContent/Particles/P_Fire.P_Fire'"));
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> 
+		MyParticleSystem(TEXT("ParticleSystem'/Game/TestPackages/Flex/flexTestEmitterSurfaceSlower.flexTestEmitterSurfaceSlower'"));
 	if (MyParticleSystem.Succeeded())
 	{
 		TestParticle = MyParticleSystem.Object;
@@ -52,9 +52,6 @@ void AFuildSpawner::spawnFuild(FTransform spawnTransform)
 
 void AFuildSpawner::destoryFuild()
 {
-//	LastPSC->ActivateSystem(false);
-//	LastPSC->DestroyComponent();
-//	LastPSC->DestroyComponent(true);
 	FTransform tmp;
 	tmp.SetLocation(FVector(500, 0, 500));
 	tmp.SetRotation(FQuat(90, 0, 0, 1));

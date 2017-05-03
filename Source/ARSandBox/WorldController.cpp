@@ -16,6 +16,8 @@ void AWorldController::BeginPlay()
 {
 	Super::BeginPlay();
 	getDepthFrame();
+	getTestTerrain(); 
+	getFuildSpawner();
 }
 
 // Called every frame
@@ -28,10 +30,15 @@ void AWorldController::Tick(float DeltaTime)
 
 void AWorldController::processControl()
 {
+
 	DepthFrame &nowDepthFrame = depthFrameGetter->get();
 	depthFrameGetter->set(imageProcessor->pixelFilter(nowDepthFrame));
+	//TArray<FColor> &vertexColor=meshTerrain->getColor();
+	//reliefMapSpawner->setVertexColorsByGradient(meshTerrain->getColor(), nowDepthFrame); 
+	//reliefMapSpawner->drawCounter(meshTerrain->getColor(), nowDepthFrame);
 	reliefMapSpawner->setVertexColorsByGradient(meshTerrain->getColor(), nowDepthFrame); 
 	reliefMapSpawner->drawCounter(meshTerrain->getColor(), nowDepthFrame);
+	meshTerrain->updateMeshTerrain(nowDepthFrame);
 	if (timeToCollision())
 	{
 		setCollisionBody();
@@ -60,15 +67,15 @@ void AWorldController::getDepthFrame()
 void AWorldController::getTestTerrain()
 {
 	TArray<AActor*> actorList;
-	TSubclassOf<AtestTerrain> classToFind;
-	classToFind = AtestTerrain::StaticClass();
+	TSubclassOf<AmeshTerrain> classToFind;
+	classToFind = AmeshTerrain::StaticClass();
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), classToFind, actorList);
 
 	for (int i = 0; i < actorList.Num(); i++)
 	{
 		if (actorList[i]->Tags[0] == TEXT("MeshTerrain"))
 		{
-			meshTerrain = Cast<AtestTerrain>(actorList[i]);
+			meshTerrain = Cast<AmeshTerrain>(actorList[i]);
 			break;
 		}
 	}
@@ -115,6 +122,7 @@ void AWorldController::spawnFuild()
 		if (actorList[i]->Tags[0] == TEXT("FuildSpawnerTag"))
 		{
 			fuildSpawner = Cast<AFuildSpawner>(actorList[i]);
+			break;
 		}
 	}
 	DepthFrame &nowDepthFrame = depthFrameGetter->get();
@@ -148,4 +156,9 @@ void AWorldController::spawnFuild()
 		spawnTransform.SetRotation(FQuat(90, 0, 0, 1));
 		fuildSpawner->spawnFuild(spawnTransform);
 	}
+}
+
+void AWorldController::getFuildSpawner()
+{
+	
 }

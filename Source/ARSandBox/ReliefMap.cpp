@@ -32,7 +32,6 @@ void ReliefMap::initColor()
 	color_interval[6] = FColor(0, 242, 0);
 	color_interval[7] = FColor(0, 242, 200);
 	color_interval[8] = FColor(0, 122, 242);
-	//color_interval[9] = FColor(0, 0, 242);
 
 	value_gradient.Add(0);
 	value_gradient.Add(85);
@@ -47,28 +46,28 @@ void ReliefMap::initColor()
 	color_gradient.Add(FColor::Red);
 }
 
-void ReliefMap::setVertexColorsByThreshold(TArray<FColor> &VertexColors,const TArray<int> &depthValue)
+void ReliefMap::setVertexColorsByThreshold(TArray<FColor> &VertexColors, const DepthFrame &depthFrame)
 {
-	for (int i = 0; i < mapHeight; i++)
+	for (int i = 0; i < depthFrame.mapHeight; i++)
 	{
-		for (int j = 0; j < mapWidth; j++)
+		for (int j = 0; j < depthFrame.mapWidth; j++)
 		{
-			int index = i*mapWidth + j;
+			int index = i*depthFrame.mapWidth + j;
 			if (i >= 480)
 			{
 				VertexColors[index] = FColor::Black;
 				continue;
 			}
-			if (depthValue[index] < value_interval[0])
+			if (depthFrame.depthValue[index] < value_interval[0])
 				VertexColors[index] = FColor::Black;
-			else if (depthValue[index]>value_interval[value_interval.Num() - 1])
+			else if (depthFrame.depthValue[index]>value_interval[value_interval.Num() - 1])
 				VertexColors[index] = FColor::Black;
 			else
 			{
 				int flag = 0;
 				for (int k = 0; k < value_interval.Num() - 1; k++)
 				{
-					if (depthValue[index] >= value_interval[k] && depthValue[index] < value_interval[k + 1])
+					if (depthFrame.depthValue[index] >= value_interval[k] && depthFrame.depthValue[index] < value_interval[k + 1])
 					{
 						//if (abs(depthValue[index] - value_interval[k]) < 0.1 || abs(depthValue[index] - value_interval[k + 1]) < 0.1)
 						//	VertexColors[index] = FColor::Black;
@@ -92,8 +91,8 @@ void ReliefMap::setVertexColorsByGradient(TArray<FColor> &VertexColors, const De
 	{
 		for (int j = 0; j < depthFrame.mapWidth; j++)
 		{
-			int index = i*mapWidth + j;
-			tmpDepth = depthFrame.depthValue[index];
+			int index = i*depthFrame.mapWidth + j;
+			auto tmpDepth = depthFrame.depthValue[index];
 			if (i >= depthFrame.realHeight)
 			{
 				VertexColors[index] = FColor::Black;
@@ -127,10 +126,8 @@ void ReliefMap::setVertexColorsByGradient(TArray<FColor> &VertexColors, const De
 FColor ReliefMap::calGradientColor(int number,int value)
 {
 	FColor resultColor;
-//	double rate = (double)(value - value_gradient[number]) / (double)(value_gradient[number + 1] - value_gradient[number]);
-	rate = (double)(value - value_gradient[number]) / (double)(value_gradient[number + 1] - value_gradient[number]);
+	double rate = (double)(value - value_gradient[number]) / (double)(value_gradient[number + 1] - value_gradient[number]);
 	if (rate == 0)
-		//	return color_gradient[number];
 		return FColor::Orange;
 	else
 	{
@@ -144,7 +141,7 @@ FColor ReliefMap::calGradientColor(int number,int value)
 
 void ReliefMap::drawCounter(TArray<FColor> &VertexColors, const DepthFrame &depthFrame)
 {
-	setMaxAndMin(depthFrame.depthValue);
+	setMaxAndMin(depthFrame);
 	calCounterValue();
 	for (int i = 0; i < depthFrame.realHeight; i++)
 	{
@@ -164,22 +161,22 @@ void ReliefMap::drawCounter(TArray<FColor> &VertexColors, const DepthFrame &dept
 
 }
 
-void ReliefMap::setMaxAndMin(const TArray<int> &depthValue)
+void ReliefMap::setMaxAndMin(const DepthFrame &depthFrame)
 {
 	minDepthValue = 256;
 	maxDepthValue = 0;
-	for (int i = 0; i < realHeight; i++)
+	for (int i = 0; i < depthFrame.realHeight; i++)
 	{
-		for (int j = 0; j < mapWidth; j++)
+		for (int j = 0; j <depthFrame.mapWidth; j++)
 		{
-			int index = i*mapWidth + j;
-			if (depthValue[index] > maxDepthValue)
+			int index = i*depthFrame.mapWidth + j;
+			if (depthFrame.depthValue[index] > maxDepthValue)
 			{
-				maxDepthValue = depthValue[index];
+				maxDepthValue = depthFrame.depthValue[index];
 			}
-			if (depthValue[index] < minDepthValue)
+			if (depthFrame.depthValue[index] < minDepthValue)
 			{
-				minDepthValue = depthValue[index];
+				minDepthValue = depthFrame.depthValue[index];
 			}
 		}
 	}

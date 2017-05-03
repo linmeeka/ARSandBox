@@ -9,8 +9,6 @@ ACollisionSpawner::ACollisionSpawner()
 {
 	offsetX = 70;
 	offsetY = -70;
-	mapHeight = 640;
-	mapWidth = 640;
 	VertexColors.Init(FColor::White, 640 * 640);
 }
 
@@ -19,6 +17,7 @@ void ACollisionSpawner::setCollision(const DepthFrame &depthFrame)
 	visitFlag.Init(1, depthFrame.sumNumber);
 	collisionBodyList.Empty();
 	int blackPoint = 0;
+	int minHeight = 256;
 	for (int i = 0; i < depthFrame.realHeight; i++)
 	{
 		for (int j = 0; j < depthFrame.mapWidth; j++)
@@ -73,18 +72,11 @@ void ACollisionSpawner::setCollision(const DepthFrame &depthFrame)
 				calculateEdgeDepth(newCollisionBody.left, depthFrame.depthValue);
 				calculateEdgeDepth(newCollisionBody.right, depthFrame.depthValue);
 
-			/*	newCollisionBody.button.Z = minHeight;
-				newCollisionBody.top.Z = minHeight;
-				newCollisionBody.left.Z = minHeight;
-				newCollisionBody.right.Z = minHeight;*/
-
-					if (checkPlane(newCollisionBody))
+				if (checkPlane(newCollisionBody))
 					newCollisionBody.center.Z = minHeight;
 				else
 				{
 					calculateEdgeDepth(newCollisionBody.center, depthFrame.depthValue);
-				//	newCollisionBody.center.Z = 150;
-
 				}
 
 				//×ø±êÏµ×ª»»

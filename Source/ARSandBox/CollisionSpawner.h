@@ -33,9 +33,9 @@ public:
 
 private:
 	TArray<CollisionBody> collisionBodyList;
-	int mapHeight, mapWidth;
-	int realHeight = 480;
-	int minHeight=256;
+	const int mapHeight = 640;
+	const int mapWidth = 640;
+	const int realHeight = 480;
 	int offsetX, offsetY;
 	int dir[8][2] = { 1,0,-1,0,0,1,0,-1,1,1,1,-1,-1,1,-1,-1 };
 	const int pointCountTreshold = 100;

@@ -13,14 +13,8 @@ class ARSANDBOX_API ARuntimeMeshObjectBase : public AActor
 {
 	GENERATED_BODY()
 
-public:	
-	int32 HalfWidth = 320;
-	int32 HalfLength = 320;
-	int32 mapWidth = 640;
-	int32 mapLength = 640;
-
+public:
 	DepthFrame *depthFrame=new DepthFrame();
-//	TArray<int>depthValue;
 	AdepthFrameGetter * tmpActor;
 
 	// Sets default values for this actor's properties
@@ -29,8 +23,6 @@ public:
 	virtual void BeginPlay() override;
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	void getDepthValue();
 
 	UPROPERTY(EditAnywhere)
 	URuntimeMeshComponent *RuntimeMesh;

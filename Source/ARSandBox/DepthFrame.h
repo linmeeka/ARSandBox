@@ -25,8 +25,8 @@ public:
 
 	TArray<int> depthValue;
 
-	bool checkInRealMap(int x, int y);
-	bool checkInMap(int x, int y);
+	bool checkInRealMap(int x, int y) const;
+	bool checkInMap(int x, int y) const;
 };
 
 #endif

@@ -12,18 +12,10 @@ class ARSANDBOX_API AdepthFrameGetter : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
-	// Sets default values for this actor's properties
-//	static AdepthFrameGetter * getInstance();
-
 private:
-//	static AdepthFrameGetter *m_pDepthFrameGetter;
 	AdepthFrameGetter();
-//	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	DepthFrame *depthFrame = new DepthFrame();
-	int depthTmp;
 	int sumNum;
-//	TArray<int> depthValue;
 	UCameraStreamComponent *cameraStream;
 	void getDepthFrame();
 	void getDepthFrame(DepthFrame * &depthFrame);

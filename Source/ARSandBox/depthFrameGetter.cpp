@@ -2,12 +2,6 @@
 
 #include "ARSandBox.h"
 #include "depthFrameGetter.h"
-//
-//AdepthFrameGetter* AdepthFrameGetter::m_pDepthFrameGetter = new AdepthFrameGetter();
-//AdepthFrameGetter* AdepthFrameGetter::getInstance()
-//{
-//	return m_pDepthFrameGetter;
-//}
 
 // Sets default values
 AdepthFrameGetter::AdepthFrameGetter()
@@ -46,14 +40,12 @@ void AdepthFrameGetter::getDepthFrame()
 				if (cameraStream->DepthBuffer.Num() != 0)
 				{
 					sumNum = cameraStream->DepthBuffer.Num();
-//					depthFrame->realSumNumber = sumNum;
 					for (int j = 0; j < sumNum; j++)
 					{
 						depthFrame->depthValue[j]= cameraStream->DepthBuffer[j];
 					}
 				}
 			}
-			//depthTmp = -1;
 			break;
 		}
 	}
