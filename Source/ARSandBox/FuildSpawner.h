@@ -20,7 +20,7 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UParticleSystem* TestParticle;
+	UParticleSystem* fuildParticle;
 	UParticleSystemComponent* LastPSC;
 	
 	bool initFlag = false;

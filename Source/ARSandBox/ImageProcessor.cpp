@@ -8,28 +8,40 @@
 AImageProcessor::AImageProcessor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-
+	initGaussTemplates();
 }
 
-void AImageProcessor::imageFiltering(TArray<int> &depthValue)
+//DepthFrame AImageProcessor::imageFiltering(const DepthFrame &newDepthFrame)
+//{
+//	/*depthFrame = newDepthFrame;
+//	depthFrame = pixelFilter(depthFrame);
+//	depthFrame = gaussFilter(depthFrame);
+//	return depthFrame;*/
+//}
+
+void AImageProcessor::initGaussTemplates()
 {
-	/*for (int i = 0; i < mapHeight; i++)
+	gaussTemplateSize = 3;
+	gaussTemplate.Add(1);
+	gaussTemplate.Add(2);
+	gaussTemplate.Add(1);
+	gaussTemplate.Add(2);
+	gaussTemplate.Add(4);
+	gaussTemplate.Add(2);
+	gaussTemplate.Add(1);
+	gaussTemplate.Add(2);
+	gaussTemplate.Add(1);
+	sumWeight = 0;
+	for (int i : gaussTemplate)
 	{
-		for (int j = 0; j < mapWidth; j++)
-		{
-			int index = i*mapWidth + j;
-			if (depthValue[index] == 255)
-			{
-				depthValue[index] = 0;
-			}
-		}
-	}*/
+		sumWeight += gaussTemplate[i];
+	}
 }
 
-TArray<int> AImageProcessor::pixelFilter(const DepthFrame &depthFrame)
+DepthFrame AImageProcessor::pixelFilter(const DepthFrame &depthFrame)
 //TArray<int> AImageProcessor::pixelFilter(const TArray<int> depthValue)
 {	
-	TArray<int> smoothDepthArray;
+	DepthFrame smoothDepthArray=depthFrame;
 	// 我们用这两个值来确定索引在正确的范围内
 	int widthBound = 512 - 1;
 	int heightBound = 424 - 1;
@@ -40,7 +52,7 @@ TArray<int> AImageProcessor::pixelFilter(const DepthFrame &depthFrame)
 		// 处理一行像素中的每个像素
 		for (int depthArrayColumnIndex = 0; depthArrayColumnIndex < depthFrame.mapWidth; depthArrayColumnIndex++)
 		{
-			depthIndex = depthArrayColumnIndex + (depthArrayRowIndex * depthFrame.mapWidth);
+			int depthIndex = depthArrayColumnIndex + (depthArrayRowIndex * depthFrame.mapWidth);
 
 			// 我们认为深度值为0的像素即为候选像素
 			if (depthFrame.depthValue[depthIndex] == 0)
@@ -132,19 +144,43 @@ TArray<int> AImageProcessor::pixelFilter(const DepthFrame &depthFrame)
 							frequency = filterCollection[i][1];
 						}
 					}
-					smoothDepthArray.Add(depth);
+					smoothDepthArray.depthValue[depthIndex]=depth;
 				}
 				else
 				{
-					smoothDepthArray.Add(0);
+					smoothDepthArray.depthValue[depthIndex] = 0;
 				}
-			}
-			else
-			{
-				// 如果像素的深度值不为零，保持原深度值
-				smoothDepthArray.Add(depthFrame.depthValue[depthIndex]);
 			}
 		}
 	}
 	return smoothDepthArray;
+}
+
+DepthFrame AImageProcessor::gaussFilter(const DepthFrame &depthFrame)
+{
+	DepthFrame resultMap=depthFrame;
+	int startX = gaussTemplateSize / 2;
+	int startY = gaussTemplateSize / 2;
+	int endX = depthFrame.realHeight - gaussTemplateSize / 2;
+	int endY = depthFrame.mapWidth - gaussTemplateSize / 2;
+	for (int i = startX; i < endX; i++)
+	{
+		for (int j = startY; j < endY; j++)
+		{
+			int sumValue = 0;
+			int templateIndex = 0;
+			int mapIndex;
+			for (int x = -gaussTemplateSize / 2; x < gaussTemplateSize / 2; x++)
+			{
+				for (int y = -gaussTemplateSize / 2; y < gaussTemplateSize / 2; y++)
+				{
+					mapIndex = (i + x)*depthFrame.mapWidth + (j + y);
+					sumValue += depthFrame.depthValue[mapIndex] * gaussTemplate[templateIndex++];
+				}
+			}
+			int index = i*depthFrame.mapWidth + j;
+			resultMap.depthValue[index] = sumValue / sumWeight;
+		}
+	}
+	return resultMap;
 }

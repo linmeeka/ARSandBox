@@ -27,6 +27,12 @@ public:
 
 	bool checkInRealMap(int x, int y) const;
 	bool checkInMap(int x, int y) const;
+
+	//void operator= (DepthFrame newDepthFrame)
+	//{
+	//	//*this = newDepthFrame;
+	//}
+
 };
 
 #endif

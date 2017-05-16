@@ -40,6 +40,7 @@ void URuntimeMeshLibrary::CreateGridMeshTriangles(int32 NumX, int32 NumY, bool b
 		{
 			for (int YIdx = 0; YIdx < NumY - 1; YIdx++)
 			{
+				//以(X,Y)为左上角的四边形。 顶点顺时针
 				const int32 I0 = (XIdx + 0)*NumY + (YIdx + 0);
 				const int32 I1 = (XIdx + 1)*NumY + (YIdx + 0);
 				const int32 I2 = (XIdx + 1)*NumY + (YIdx + 1);
@@ -47,6 +48,7 @@ void URuntimeMeshLibrary::CreateGridMeshTriangles(int32 NumX, int32 NumY, bool b
 
 				if (bWinding)
 				{
+					//将四边形转化为三角形。分割为左上和右下两个三角形
 					ConvertQuadToTriangles(Triangles, I0, I1, I2, I3);
 				}
 				else

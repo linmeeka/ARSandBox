@@ -20,18 +20,18 @@ void ReliefMap::initColor()
 	//…Ë÷√÷µŒ™ { 0,25, 50,75, 100,125, 150,175, 200,255, 255 };
 	value_interval[0] = 0;
 	for (int i = 1; i < 10; i++)
-		value_interval[i] = value_interval[i - 1] + 25;
+		value_interval[i] = value_interval[i - 1] + 29;
 	value_interval[10] = 255;
 
 	color_interval[0] = FColor(255, 0, 0);
-	color_interval[1] = FColor(255, 29, 0);
-	color_interval[2] = FColor(255, 88, 13);
-	color_interval[3] = FColor(255, 137, 13);
-	color_interval[4] = FColor(255, 205, 23);
-	color_interval[5] = FColor(227, 1, 14);
-	color_interval[6] = FColor(0, 242, 0);
-	color_interval[7] = FColor(0, 242, 200);
-	color_interval[8] = FColor(0, 122, 242);
+	color_interval[1] = FColor(231, 143, 24);
+	color_interval[2] = FColor(237, 233, 46);
+	color_interval[3] = FColor(153, 238, 68);
+	color_interval[4] = FColor(49, 230, 67);
+	color_interval[5] = FColor(64, 238, 186);
+	color_interval[6] = FColor(80, 231, 248);
+	color_interval[7] = FColor(4, 104, 240);
+	color_interval[8] = FColor(46, 61, 245);
 
 	value_gradient.Add(0);
 	value_gradient.Add(85);
@@ -39,11 +39,28 @@ void ReliefMap::initColor()
 	value_gradient.Add(256);
 	value_gradient.Add(256);
 
+	color_gradient.Add(FColor::Blue);
 	color_gradient.Add(FColor::Green);
-	color_gradient.Add(FColor::White);
 	color_gradient.Add(FColor::Yellow);
 	color_gradient.Add(FColor::Red);
 	color_gradient.Add(FColor::Red);
+}
+
+void ReliefMap::drawReliefMap(TArray<FColor> &VertexColors, const DepthFrame &depthFrame, DrawingMethod drawingMethod/* =byGradient */)
+{
+	switch (drawingMethod)
+	{
+	case ReliefMap::byThreshold:
+		setVertexColorsByThreshold(VertexColors, depthFrame);
+		drawContourByThreshold(VertexColors, depthFrame);
+		break;
+	case ReliefMap::byGradient:
+		setVertexColorsByGradient(VertexColors, depthFrame);
+		drawCounterByGradient(VertexColors, depthFrame);
+		break;
+	default:
+		break;
+	}
 }
 
 void ReliefMap::setVertexColorsByThreshold(TArray<FColor> &VertexColors, const DepthFrame &depthFrame)
@@ -128,18 +145,25 @@ FColor ReliefMap::calGradientColor(int number,int value)
 	FColor resultColor;
 	double rate = (double)(value - value_gradient[number]) / (double)(value_gradient[number + 1] - value_gradient[number]);
 	if (rate == 0)
-		return FColor::Orange;
+	{
+		if (value == value_gradient[number])
+		{
+			return color_gradient[number];
+		}
+		else
+			return FColor::Orange;
+	}
 	else
 	{
 		resultColor = color_gradient[number];
-		resultColor.R += (color_gradient[number].R - color_gradient[number + 1].R)*rate;
-		resultColor.G += (color_gradient[number].G - color_gradient[number + 1].G)*rate;
-		resultColor.B += (color_gradient[number].B - color_gradient[number + 1].B)*rate;
+		resultColor.R -= (color_gradient[number].R - color_gradient[number + 1].R)*rate;
+		resultColor.G -= (color_gradient[number].G - color_gradient[number + 1].G)*rate;
+		resultColor.B -= (color_gradient[number].B - color_gradient[number + 1].B)*rate;
 	}
 	return resultColor;
 }
 
-void ReliefMap::drawCounter(TArray<FColor> &VertexColors, const DepthFrame &depthFrame)
+void ReliefMap::drawCounterByGradient(TArray<FColor> &VertexColors, const DepthFrame &depthFrame)
 {
 	setMaxAndMin(depthFrame);
 	calCounterValue();
@@ -186,10 +210,63 @@ void ReliefMap::calCounterValue()
 {
 	counterValue.Empty();
 	int nowValue = minDepthValue;
-	int dif = (maxDepthValue - minDepthValue) / counterNumber;
+	int dif = (maxDepthValue - minDepthValue) / counterNumber+1;
 	for (int i = 0; i < counterNumber; i++)
 	{
 		counterValue.Add(nowValue);
 		nowValue += dif;
+	}
+}
+
+bool ReliefMap::checkCounter(int x, int y, TArray<FColor> &VertexColors, const DepthFrame &depthFrame)
+{
+	TArray<FColor> colorArea;
+	bool checkFlag = 0;
+	if (depthFrame.checkInRealMap(x + 1, y))
+	{
+		colorArea.Add(VertexColors[(x + 1)*depthFrame.mapWidth + y]);
+	}
+	if (depthFrame.checkInRealMap(x + 1, y + 1))
+	{
+		colorArea.Add(VertexColors[(x + 1)*depthFrame.mapWidth + y + 1]);
+	}
+	if (depthFrame.checkInRealMap(x, y + 1))
+	{
+		colorArea.Add(VertexColors[(x)*depthFrame.mapWidth + y + 1]);
+	}
+	FColor tmp = VertexColors[x*depthFrame.mapWidth + y];
+	for (int i = 0; i < colorArea.Num(); i++)
+	{
+		if (tmp != colorArea[i])
+		{
+			checkFlag = 1;
+			break;
+		}
+	}
+	if (checkFlag)
+		return true;
+	else
+		return false;
+}
+
+void ReliefMap::drawContourByThreshold(TArray<FColor> &VertexColors, const DepthFrame &depthFrame)
+{
+	counterFlag.Init(0, depthFrame.sumNumber);
+	for (int i = 0; i < depthFrame.mapLength; i++)
+	{
+		for (int j = 0; j < depthFrame.mapWidth; j++)
+		{
+			if (checkCounter(i, j,VertexColors,depthFrame))
+				counterFlag[i*depthFrame.mapWidth + j] = 1;
+		}
+	}
+	for (int i = 0; i < depthFrame.mapLength; i++)
+	{
+		for (int j = 0; j < depthFrame.mapWidth; j++)
+		{
+			int index = i*depthFrame.mapWidth + j;
+			if (counterFlag[index])
+				VertexColors[index] = FColor::Black;
+		}
 	}
 }

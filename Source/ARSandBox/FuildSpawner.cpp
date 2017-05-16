@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ARSandBox.h"
 #include "FuildSpawner.h"
@@ -32,7 +32,7 @@ void AFuildSpawner::loadParticle()
 		MyParticleSystem(TEXT("ParticleSystem'/Game/TestPackages/Flex/flexTestEmitterSurfaceSlower.flexTestEmitterSurfaceSlower'"));
 	if (MyParticleSystem.Succeeded())
 	{
-		TestParticle = MyParticleSystem.Object;
+		fuildParticle = MyParticleSystem.Object;
 	}
 }
 
@@ -41,7 +41,7 @@ void AFuildSpawner::initFuild()
 	UWorld *world = GetWorld();
 	FTransform initTransform;
 	initTransform.SetLocation(FVector(1000, 0, 0));
-	LastPSC = UGameplayStatics::SpawnEmitterAtLocation(world, TestParticle, initTransform);
+	LastPSC = UGameplayStatics::SpawnEmitterAtLocation(world, fuildParticle, initTransform);
 	initFlag = true;
 }
 
@@ -53,7 +53,7 @@ void AFuildSpawner::spawnFuild(FTransform spawnTransform)
 void AFuildSpawner::destoryFuild()
 {
 	FTransform tmp;
-	tmp.SetLocation(FVector(500, 0, 500));
+	tmp.SetLocation(FVector(1000, 1000, 1000));
 	tmp.SetRotation(FQuat(90, 0, 0, 1));
 	LastPSC->SetWorldTransform(tmp);
 	

@@ -38,7 +38,7 @@ void AmeshTerrain::initMaterial()
 void AmeshTerrain::Generate()
 {
 	BoundingBox = FBox(FVector(-HalfLength * CellSize, -HalfWidth * CellSize, -100), 
-		FVector(HalfLength * CellSize, HalfWidth * CellSize, 100));
+		FVector(HalfLength * CellSize, HalfWidth * CellSize,300));
 
 	float Scale = CellSize / scalingFactor;
 
@@ -53,6 +53,7 @@ void AmeshTerrain::Generate()
 		}
 	}
 
+	//生成三角面片索引（顶点的索引）
 	URuntimeMeshLibrary::CreateGridMeshTriangles(HalfLength * 2, HalfWidth * 2, true, Triangles);
 
 	//	RuntimeMesh->CreateMeshSection(0, Vertices, Triangles, Normals, TextureCoordinates, VertexColors, Tangents);
@@ -71,7 +72,6 @@ void AmeshTerrain::updateMeshTerrain(const DepthFrame &depthFrame)
 {
 	if (!bGenerated)
 		Generate();
-	//	calDepthSumPoint(250);
 
 	for (int i = 0; i < depthFrame.mapLength; i++)
 	{
@@ -83,6 +83,7 @@ void AmeshTerrain::updateMeshTerrain(const DepthFrame &depthFrame)
 		}
 	}
 	RuntimeMesh->UpdateMeshSection(0, Vertices, Normals, TextureCoordinates, VertexColors, Tangents);
+	calDepthSumPoint(depthFrame.depthValue[depthFrame.realSumNumber/2]);
 }
 
 void AmeshTerrain::addCollisionBody(const TArray<FVector> &presentCollisionBody)
@@ -170,7 +171,7 @@ void AmeshTerrain::calDepthSumPoint(int threshold)
 			sum++;
 	}
 	FString logSumNumber;
-	logSumNumber = FString::FromInt(sum);
+	logSumNumber = FString::FromInt(threshold);
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, logSumNumber);
 }
 

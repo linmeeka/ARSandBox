@@ -42,7 +42,7 @@ void AdepthFrameGetter::getDepthFrame()
 					sumNum = cameraStream->DepthBuffer.Num();
 					for (int j = 0; j < sumNum; j++)
 					{
-						depthFrame->depthValue[j]= cameraStream->DepthBuffer[j];
+						depthFrame->depthValue[j]= 255-cameraStream->DepthBuffer[j];
 					}
 				}
 			}

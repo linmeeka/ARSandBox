@@ -878,18 +878,20 @@ void URuntimeMeshComponent::CreateMeshSection(int32 SectionIndex, const TArray<F
 	SCOPE_CYCLE_COUNTER(STAT_RuntimeMesh_CreateMeshSection);
 
 	// Validate all creation parameters
+	// 验证参数是否合法
 	RMC_VALIDATE_CREATIONPARAMETERS(SectionIndex, Vertices, Triangles, /*VoidReturn*/);
 
 	// Create the section
 	auto NewSection = CreateOrResetSectionLegacyType(SectionIndex, 1);
 
+	// 更新用于绘制mesh的顶点数组和索引数组
 	// Update the mesh data in the section
 	NewSection->UpdateVertexBufferInternal(Vertices, Normals, Tangents, UV0, TArray<FVector2D>(), Colors);
 
 	TArray<int32>& TrianglesRef = const_cast<TArray<int32>&>(Triangles);
 	NewSection->UpdateIndexBuffer(TrianglesRef, false);
 
-	// Track collision status and update collision information if necessary
+	// Track collision status and update collision information if necessaryUpdateVertexBufferInternal
 	NewSection->CollisionEnabled = bCreateCollision;
 	NewSection->UpdateFrequency = UpdateFrequency;
 

@@ -36,9 +36,8 @@ private:
 	const int frameInterval = 20;
 
 	//depthFrame
-	DepthFrame *depthFrame = new DepthFrame();
 	AdepthFrameGetter *depthFrameGetter;
-	void getDepthFrame();
+	void getDepthFrameGetter();
 
 	//Filter
 	AImageProcessor *imageProcessor = new AImageProcessor();
@@ -48,7 +47,7 @@ private:
 
 	// meshTerrain
 	AmeshTerrain *meshTerrain;
-	void getTestTerrain();
+	void getMeshTerrain();
 
 	//collision
 	ACollisionSpawner *collisionSpawner = new ACollisionSpawner();

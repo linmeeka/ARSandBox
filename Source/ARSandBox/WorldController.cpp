@@ -15,8 +15,8 @@ AWorldController::AWorldController()
 void AWorldController::BeginPlay()
 {
 	Super::BeginPlay();
-	getDepthFrame();
-	getTestTerrain(); 
+	getDepthFrameGetter();
+	getMeshTerrain(); 
 	getFuildSpawner();
 }
 
@@ -31,13 +31,20 @@ void AWorldController::Tick(float DeltaTime)
 void AWorldController::processControl()
 {
 
+	DepthFrame nowDepthFrame0 = depthFrameGetter->get();
+	depthFrameGetter->set(imageProcessor->pixelFilter(nowDepthFrame0).depthValue);
+	DepthFrame nowDepthFrame1 = depthFrameGetter->get();
+	depthFrameGetter->set(imageProcessor->pixelFilter(nowDepthFrame1).depthValue);
 	DepthFrame &nowDepthFrame = depthFrameGetter->get();
-	depthFrameGetter->set(imageProcessor->pixelFilter(nowDepthFrame));
-	//TArray<FColor> &vertexColor=meshTerrain->getColor();
+	//nowDepthFrame =imageProcessor->pixelFilter(nowDepthFrame);
+	//imageProcessor->gaussFilter(nowDepthFrame);
+//	depthFrameGetter->set(nowDepthFrame.depthValue);
+	//TArray<FColor> &vertexColor=meshTerrain->getColor();	
 	//reliefMapSpawner->setVertexColorsByGradient(meshTerrain->getColor(), nowDepthFrame); 
 	//reliefMapSpawner->drawCounter(meshTerrain->getColor(), nowDepthFrame);
-	reliefMapSpawner->setVertexColorsByGradient(meshTerrain->getColor(), nowDepthFrame); 
-	reliefMapSpawner->drawCounter(meshTerrain->getColor(), nowDepthFrame);
+	//reliefMapSpawner->setVertexColorsByGradient(meshTerrain->getColor(), nowDepthFrame); 
+	//reliefMapSpawner->drawCounter(meshTerrain->getColor(), nowDepthFrame);
+	reliefMapSpawner->drawReliefMap(meshTerrain->getColor(), nowDepthFrame,reliefMapSpawner->byGradient);
 	meshTerrain->updateMeshTerrain(nowDepthFrame);
 	if (timeToCollision())
 	{
@@ -47,7 +54,7 @@ void AWorldController::processControl()
 }
 
 //DepthFrame
-void AWorldController::getDepthFrame()
+void AWorldController::getDepthFrameGetter()
 {
 	TArray<AActor*> actorList;
 	TSubclassOf<AdepthFrameGetter> classToFind;
@@ -64,7 +71,7 @@ void AWorldController::getDepthFrame()
 	}
 }
 
-void AWorldController::getTestTerrain()
+void AWorldController::getMeshTerrain()
 {
 	TArray<AActor*> actorList;
 	TSubclassOf<AmeshTerrain> classToFind;
@@ -112,24 +119,13 @@ void AWorldController::setCollisionBody()
 
 void AWorldController::spawnFuild()
 {
-	TArray<AActor*> actorList;
-	TSubclassOf<AFuildSpawner> classToFind;
-	classToFind = AFuildSpawner::StaticClass();
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), classToFind, actorList);
-
-	for (int i = 0; i < actorList.Num(); i++)
-	{
-		if (actorList[i]->Tags[0] == TEXT("FuildSpawnerTag"))
-		{
-			fuildSpawner = Cast<AFuildSpawner>(actorList[i]);
-			break;
-		}
-	}
+	
 	DepthFrame &nowDepthFrame = depthFrameGetter->get();
 	fuildSpawner->calPlaneDepth(nowDepthFrame);
 
 	if (fuildSpawner->planeDepth < 20)
 	{
+		fuildSpawner->destoryFuild();
 		return;
 	}
 	FVector spawnLocation;
@@ -156,9 +152,25 @@ void AWorldController::spawnFuild()
 		spawnTransform.SetRotation(FQuat(90, 0, 0, 1));
 		fuildSpawner->spawnFuild(spawnTransform);
 	}
+	else
+	{
+		fuildSpawner->destoryFuild();
+	}
 }
 
 void AWorldController::getFuildSpawner()
 {
-	
+	TArray<AActor*> actorList;
+	TSubclassOf<AFuildSpawner> classToFind;
+	classToFind = AFuildSpawner::StaticClass();
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), classToFind, actorList);
+
+	for (int i = 0; i < actorList.Num(); i++)
+	{
+		if (actorList[i]->Tags[0] == TEXT("FuildSpawnerTag"))
+		{
+			fuildSpawner = Cast<AFuildSpawner>(actorList[i]);
+			break;
+		}
+	}
 }

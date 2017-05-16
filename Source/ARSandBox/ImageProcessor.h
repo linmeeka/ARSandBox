@@ -7,13 +7,23 @@ class AImageProcessor
 public:	
 	// Sets default values for this actor's properties
 	AImageProcessor();
-	void imageFiltering( TArray<int> &depthValue);
-	TArray<int> pixelFilter(const DepthFrame &depthFrame);
+//	DepthFrame imageFiltering(const DepthFrame &newDepthFrame);
+	DepthFrame pixelFilter(const DepthFrame &depthFrame);
+	DepthFrame gaussFilter(const DepthFrame &depthFrame);
 
 private:
-// pixelFlter
-	const int innerBandThreshold = 3;
-	const int outerBandThreshold = 7;
+	DepthFrame depthFrame;
 
-	int depthIndex;
+// pixelFilter
+	const int innerBandThreshold = 3;
+	const int outerBandThreshold = 1;
+
+	
+//gaussFilter
+	TArray<int> gaussTemplate;
+	void initGaussTemplates();
+	int gaussTemplateSize;
+	int sumWeight;
+
+	
 };
