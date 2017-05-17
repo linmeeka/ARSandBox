@@ -32,4 +32,6 @@ public:
 		return *depthFrame;
 	}
 	void set(const TArray<int> &newDepthValue);
+
+	int frameCount = 0;
 };

@@ -28,6 +28,9 @@ void AdepthFrameGetter::Tick(float DeltaTime)
 
 void AdepthFrameGetter::getDepthFrame()
 {
+	frameCount++;
+	if (frameCount > 200)
+		return;
 	TArray <UCameraStreamComponent*> components;
 	GetComponents<UCameraStreamComponent>(components);
 	for (int i = 0; i < components.Num(); i++)
@@ -42,7 +45,8 @@ void AdepthFrameGetter::getDepthFrame()
 					sumNum = cameraStream->DepthBuffer.Num();
 					for (int j = 0; j < sumNum; j++)
 					{
-						depthFrame->depthValue[j]= 255-cameraStream->DepthBuffer[j];
+						//depthFrame->depthValue[j]= 255-cameraStream->DepthBuffer[j];
+						depthFrame->depthValue[j] = cameraStream->DepthBuffer[j];
 					}
 				}
 			}
@@ -53,7 +57,7 @@ void AdepthFrameGetter::getDepthFrame()
 
 void AdepthFrameGetter::set(const TArray<int> &newDepthValue)
 {
-	for (auto i : newDepthValue)
+	for (int i = 0; i < depthFrame->realSumNumber;i++)
 	{
 		depthFrame->depthValue[i] = newDepthValue[i];
 	}

@@ -15,8 +15,8 @@ private:
 	DepthFrame depthFrame;
 
 // pixelFilter
-	const int innerBandThreshold = 3;
-	const int outerBandThreshold = 1;
+	const int innerBandThreshold =8;
+	const int outerBandThreshold = 16;
 
 	
 //gaussFilter
@@ -24,6 +24,7 @@ private:
 	void initGaussTemplates();
 	int gaussTemplateSize;
 	int sumWeight;
+
 
 	
 };

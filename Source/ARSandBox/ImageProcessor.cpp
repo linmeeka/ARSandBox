@@ -9,6 +9,7 @@ AImageProcessor::AImageProcessor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	initGaussTemplates();
+
 }
 
 //DepthFrame AImageProcessor::imageFiltering(const DepthFrame &newDepthFrame)
@@ -84,10 +85,11 @@ DepthFrame AImageProcessor::pixelFilter(const DepthFrame &depthFrame)
 						// 我们不要xi = 0&&yi = 0的情况，因为此时操作的就是候选像素
 						if (xi != 0 || yi != 0)
 						{
-							// 确定操作像素在深度图中的位置
-							int xSearch = x + xi;
-							int ySearch = y + yi;
-
+							//// 确定操作像素在深度图中的位置
+							//int xSearch = x + xi;
+							//int ySearch = y + yi;
+							int xSearch = depthArrayRowIndex + xi;
+							int ySearch = depthArrayColumnIndex + yi;
 							// 检查操作像素的位置是否超过了图像的边界（候选像素在图像的边缘）
 							if(depthFrame.checkInRealMap(xSearch,ySearch))
 							{
@@ -118,7 +120,7 @@ DepthFrame AImageProcessor::pixelFilter(const DepthFrame &depthFrame)
 									// 确定是内外哪个边界内的像素不为零，对相应计数器加一
 									if (yi != 2 && yi != -2 && xi != 2 && xi != -2)
 										innerBandCount++;
-									else
+									//else
 										outerBandCount++;
 								}
 							}
@@ -159,6 +161,7 @@ DepthFrame AImageProcessor::pixelFilter(const DepthFrame &depthFrame)
 DepthFrame AImageProcessor::gaussFilter(const DepthFrame &depthFrame)
 {
 	DepthFrame resultMap=depthFrame;
+	
 	int startX = gaussTemplateSize / 2;
 	int startY = gaussTemplateSize / 2;
 	int endX = depthFrame.realHeight - gaussTemplateSize / 2;
@@ -170,17 +173,19 @@ DepthFrame AImageProcessor::gaussFilter(const DepthFrame &depthFrame)
 			int sumValue = 0;
 			int templateIndex = 0;
 			int mapIndex;
-			for (int x = -gaussTemplateSize / 2; x < gaussTemplateSize / 2; x++)
+			for (int x = -gaussTemplateSize / 2; x <= gaussTemplateSize / 2; x++)
 			{
-				for (int y = -gaussTemplateSize / 2; y < gaussTemplateSize / 2; y++)
+				for (int y = -gaussTemplateSize / 2; y <= gaussTemplateSize / 2; y++)
 				{
 					mapIndex = (i + x)*depthFrame.mapWidth + (j + y);
 					sumValue += depthFrame.depthValue[mapIndex] * gaussTemplate[templateIndex++];
 				}
 			}
 			int index = i*depthFrame.mapWidth + j;
-			resultMap.depthValue[index] = sumValue / sumWeight;
+			resultMap.depthValue[index] = (int)((sumValue*1.0) / (sumWeight*1.0));
+			
 		}
 	}
+
 	return resultMap;
 }

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "DepthFrame.h"
+#include "DrawDepthMap.h"
 #include "depthFrameGetter.h"
 #include "ReliefMap.h"
 #include "ImageProcessor.h"
@@ -58,4 +59,11 @@ private:
 	void getFuildSpawner();
 	AFuildSpawner *fuildSpawner;
 	const int basinTreshold = 40;
+
+	//drawDepthMap
+	ADrawDepthMap *drawDepthMap;
+	void getDrawDepthMap();
+
+	//debugLog
+	void logMessage(int message);
 };

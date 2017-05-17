@@ -18,6 +18,7 @@ void AWorldController::BeginPlay()
 	getDepthFrameGetter();
 	getMeshTerrain(); 
 	getFuildSpawner();
+	//getDrawDepthMap();
 }
 
 // Called every frame
@@ -28,29 +29,46 @@ void AWorldController::Tick(float DeltaTime)
 	frameCounter++;
 }
 
+void AWorldController::getDrawDepthMap()
+{
+	TArray<AActor*> actorList;
+	TSubclassOf<ADrawDepthMap> classToFind;
+	classToFind = ADrawDepthMap::StaticClass();
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), classToFind, actorList);
+
+	for (int i = 0; i < actorList.Num(); i++)
+	{
+		if (actorList[i]->Tags[0] == TEXT("DrawDepthMap"))
+		{
+			drawDepthMap = Cast<ADrawDepthMap>(actorList[i]);
+			break;
+		}
+	}
+}
+
 void AWorldController::processControl()
 {
-
-	DepthFrame nowDepthFrame0 = depthFrameGetter->get();
-	depthFrameGetter->set(imageProcessor->pixelFilter(nowDepthFrame0).depthValue);
-	DepthFrame nowDepthFrame1 = depthFrameGetter->get();
-	depthFrameGetter->set(imageProcessor->pixelFilter(nowDepthFrame1).depthValue);
-	DepthFrame &nowDepthFrame = depthFrameGetter->get();
-	//nowDepthFrame =imageProcessor->pixelFilter(nowDepthFrame);
-	//imageProcessor->gaussFilter(nowDepthFrame);
-//	depthFrameGetter->set(nowDepthFrame.depthValue);
-	//TArray<FColor> &vertexColor=meshTerrain->getColor();	
-	//reliefMapSpawner->setVertexColorsByGradient(meshTerrain->getColor(), nowDepthFrame); 
-	//reliefMapSpawner->drawCounter(meshTerrain->getColor(), nowDepthFrame);
-	//reliefMapSpawner->setVertexColorsByGradient(meshTerrain->getColor(), nowDepthFrame); 
-	//reliefMapSpawner->drawCounter(meshTerrain->getColor(), nowDepthFrame);
-	reliefMapSpawner->drawReliefMap(meshTerrain->getColor(), nowDepthFrame,reliefMapSpawner->byGradient);
-	meshTerrain->updateMeshTerrain(nowDepthFrame);
-	if (timeToCollision())
+	logMessage(frameCounter);
+	if (frameCounter <= 200)
 	{
-		setCollisionBody();
-		spawnFuild();
+
+		DepthFrame nowDepthFrame0 = depthFrameGetter->get();
+		depthFrameGetter->set((imageProcessor->pixelFilter(nowDepthFrame0)).depthValue);
+		DepthFrame nowDepthFrame1 = depthFrameGetter->get();
+		depthFrameGetter->set((imageProcessor->gaussFilter(nowDepthFrame1)).depthValue);
 	}
+	DepthFrame &nowDepthFrame = depthFrameGetter->get();
+	//drawDepthMap->getDepthMap(nowDepthFrame);
+
+	reliefMapSpawner->drawReliefMap(meshTerrain->getColor(), nowDepthFrame,reliefMapSpawner->byGradient);
+	if (frameCounter> 400)
+		reliefMapSpawner->drawReliefMap(meshTerrain->getColor(), nowDepthFrame, reliefMapSpawner->byThreshold);
+	meshTerrain->updateMeshTerrain(nowDepthFrame);
+	//if (timeToCollision())
+	//{
+	//	setCollisionBody();
+	//	spawnFuild();
+	//}
 }
 
 //DepthFrame
@@ -173,4 +191,11 @@ void AWorldController::getFuildSpawner()
 			break;
 		}
 	}
+}
+
+void AWorldController::logMessage(int message)
+{
+	FString logSumNumber;
+	logSumNumber = FString::FromInt(message);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, logSumNumber);
 }
