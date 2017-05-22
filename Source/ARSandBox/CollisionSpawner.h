@@ -2,7 +2,10 @@
 
 #pragma once
 
+#include <queue>
 #include "DepthFrame.h"
+
+using namespace std;
 
 struct CollisionBody
 {
@@ -33,9 +36,12 @@ public:
 
 private:
 	TArray<CollisionBody> collisionBodyList;
-	const int mapHeight = 640;
-	const int mapWidth = 640;
-	const int realHeight = 480;
+	//const int mapHeight = 640;
+	//const int mapWidth = 640;
+	//const int realHeight = 480;
+	const int mapHeight = 512;
+	const int mapWidth = 512;
+	const int realHeight = 424;
 	int offsetX, offsetY;
 	int dir[8][2] = { 1,0,-1,0,0,1,0,-1,1,1,1,-1,-1,1,-1,-1 };
 	const int pointCountTreshold = 100;
@@ -43,6 +49,7 @@ private:
 	TArray<bool> visitFlag;
 	TArray<FColor> VertexColors;
 	void calculateEdge(int startX, int startY, CollisionBody &newCollisionBody,int &pointCount);
+	void calculateEdge_BFS(FVector2D curPosition, CollisionBody &newCollisionBody, int &pointCount);
 	FVector calculateCenter(const CollisionBody newCollisionBody);
 	bool checkInMap(int x, int y);
 	bool checkDir(int x, int y);

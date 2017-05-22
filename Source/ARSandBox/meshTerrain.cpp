@@ -73,7 +73,7 @@ void AmeshTerrain::updateMeshTerrain(const DepthFrame &depthFrame)
 	if (!bGenerated)
 		Generate();
 
-	for (int i = 0; i < depthFrame.mapLength; i++)
+	for (int i = 0; i < depthFrame.mapHeight; i++)
 	{
 		for (int j = 0; j < depthFrame.mapWidth; j++)
 		{
@@ -104,7 +104,7 @@ void AmeshTerrain::OnConstruction(const FTransform& Transform)
 
 void AmeshTerrain::setEdge()
 {
-	for (int i = 0; i < mapLength; i++)
+	for (int i = 0; i <mapHeight; i++)
 	{
 		for (int j = 0; j < mapWidth; j++)
 		{

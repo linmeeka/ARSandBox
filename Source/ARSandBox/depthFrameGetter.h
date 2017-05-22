@@ -3,6 +3,7 @@
 #pragma once
 
 #include "DepthFrame.h"
+#include "KinectFrameManager.h"
 #include "CameraStreamComponent.h"
 #include "GameFramework/Actor.h"
 #include "depthFrameGetter.generated.h"
@@ -17,8 +18,13 @@ private:
 	DepthFrame *depthFrame = new DepthFrame();
 	int sumNum;
 	UCameraStreamComponent *cameraStream;
-	void getDepthFrame();
-	void getDepthFrame(DepthFrame * &depthFrame);
+	
+	//realsense
+	void getDepthFrameFromRealSense(DepthFrame * &depthFrame);
+
+	//kinect
+	void getDepthFrameFromeKinect(DepthFrame * &depthFrame);
+	AKinectFrameManager *kinectFrameManager;
 
 protected:
 	// Called when the game starts or when spawned

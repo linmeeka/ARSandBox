@@ -42,7 +42,7 @@ void ACollisionSpawner::setCollision(const DepthFrame &depthFrame)
 
 	collisionBodyList.Add(planeCollisionBody);
 
-	if (blackPoint > 100000)
+	if (blackPoint > 10000)
 		return;
 
 	for (int i = 0; i < depthFrame.realHeight; i++)
@@ -58,7 +58,8 @@ void ACollisionSpawner::setCollision(const DepthFrame &depthFrame)
 				//计算
 				pointCount = 0;
 				//int pointCount = 0;
-				calculateEdge(i, j, newCollisionBody,pointCount);
+				//calculateEdge(i, j, newCollisionBody,pointCount);
+				calculateEdge_BFS(FVector2D(i, j), newCollisionBody, pointCount);
 				if (pointCount < pointCountTreshold)
 					continue;
 				else
@@ -123,15 +124,15 @@ bool ACollisionSpawner::checkInMap(int x, int y)
 
 bool ACollisionSpawner::checkDir(int x, int y)
 {
-	if ((!checkInMap(x,y)) || visitFlag[x*mapWidth + y] == true)
-		return false;
-	else
+	if (checkInMap(x, y) && visitFlag[x*mapWidth + y] == false)
 		return true;
+	else
+		return false;
 }
 
 void ACollisionSpawner::calculateEdge(int startX, int startY, CollisionBody &newCollisionBody, int &pointCount)
  {
-	 pointCount++;
+	pointCount++;
 	visitFlag[startX*mapWidth+startY] = true;
 	VertexColors[startX*mapWidth + startY] = FColor::Red;
 	bool movingFlag = false;
@@ -164,6 +165,54 @@ void ACollisionSpawner::calculateEdge(int startX, int startY, CollisionBody &new
 	}
 	if (!movingFlag)
 		return;
+}
+
+struct MyStruct
+{
+
+};
+
+//检测碰撞体边界点
+void ACollisionSpawner::calculateEdge_BFS(FVector2D startPosition, CollisionBody &newCollisionBody, int &pointCount)
+{
+	queue<FVector2D> pointQueue;
+	pointQueue.push(startPosition);
+	while (!pointQueue.empty())
+	{
+		FVector2D curPosition = pointQueue.front();
+		FVector2D nextPosition;
+		visitFlag[curPosition.X*mapWidth + curPosition.Y] = true;
+		pointCount++;
+		if (curPosition.X < newCollisionBody.left.X)
+		{
+			newCollisionBody.setCoordinate2(newCollisionBody.left, curPosition.X, curPosition.Y);
+		}
+		if (curPosition.X > newCollisionBody.right.X)
+		{
+			newCollisionBody.setCoordinate2(newCollisionBody.right, curPosition.X, curPosition.Y);
+		}
+		if (curPosition.Y< newCollisionBody.button.Y)
+		{
+			newCollisionBody.setCoordinate2(newCollisionBody.button, curPosition.X, curPosition.Y);
+		}
+		if (curPosition.Y > newCollisionBody.top.Y)
+		{
+			newCollisionBody.setCoordinate2(newCollisionBody.top, curPosition.X, curPosition.Y);
+		}
+		for (int i = 0; i < 4; i++)
+		{
+			nextPosition.X =curPosition.X  + dir[i][0];
+			nextPosition.Y =curPosition.Y  + dir[i][1];
+			if (checkDir(nextPosition.X, nextPosition.Y))
+			{
+				pointQueue.push(nextPosition);
+				
+			}
+		}
+		pointQueue.pop();
+	}
+	
+
 }
 
 void ACollisionSpawner::calculateEdgeDepth(FVector &point, const TArray<int> &depthValue)

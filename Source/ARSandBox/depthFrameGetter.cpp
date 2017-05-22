@@ -16,21 +16,19 @@ void AdepthFrameGetter::BeginPlay()
 {
 	Super::BeginPlay();
 	this->Tags.Add(TEXT("DepthFrameGetter"));
-	sumNum = 307200;
+	sumNum = 512 * 424;
 }
 
 // Called every frame
 void AdepthFrameGetter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	getDepthFrame();
+	getDepthFrameFromeKinect(depthFrame);
 }
 
-void AdepthFrameGetter::getDepthFrame()
+void AdepthFrameGetter::getDepthFrameFromRealSense(DepthFrame * &depthFrame)
 {
 	frameCount++;
-	if (frameCount > 200)
-		return;
 	TArray <UCameraStreamComponent*> components;
 	GetComponents<UCameraStreamComponent>(components);
 	for (int i = 0; i < components.Num(); i++)
@@ -55,15 +53,42 @@ void AdepthFrameGetter::getDepthFrame()
 	}
 }
 
+void AdepthFrameGetter::getDepthFrameFromeKinect(DepthFrame * &depthFrame)
+{
+	frameCount++;
+	if (frameCount >= 500)
+		return;
+	TArray<AActor*> actorList;
+	TSubclassOf<AKinectFrameManager> classToFind;
+	classToFind = AKinectFrameManager::StaticClass();
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), classToFind, actorList);
+
+	for (int i = 0; i < actorList.Num(); i++)
+	{
+		if (actorList[i]->Tags[0] == TEXT("kinectFrameManager"))
+		{
+			kinectFrameManager = Cast<AKinectFrameManager>(actorList[i]);
+			break;
+		}
+	}
+
+	depthFrame->realHeight = kinectFrameManager->iHeight;
+	depthFrame->mapHeight = depthFrame->mapWidth = kinectFrameManager->iWidth;
+	depthFrame->realSumNumber = kinectFrameManager->iHeight*kinectFrameManager->iWidth;
+	depthFrame->sumNumber = kinectFrameManager->iWidth*kinectFrameManager->iWidth;
+
+	for (int i = 0; i < depthFrame->realSumNumber; i++)
+	{
+		//int depth = kinectframemanager->depthvalue[i] >> 3;
+		int depth = kinectFrameManager->depthValue[i];
+		depthFrame->depthValue[i] = depth;
+	}
+}
+
 void AdepthFrameGetter::set(const TArray<int> &newDepthValue)
 {
 	for (int i = 0; i < depthFrame->realSumNumber;i++)
 	{
 		depthFrame->depthValue[i] = newDepthValue[i];
 	}
-}
-
-void AdepthFrameGetter::getDepthFrame(DepthFrame * &depthFrame)
-{
-
 }

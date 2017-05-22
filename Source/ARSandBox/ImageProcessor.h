@@ -16,7 +16,7 @@ private:
 
 // pixelFilter
 	const int innerBandThreshold =8;
-	const int outerBandThreshold = 16;
+	const int outerBandThreshold = 17;
 
 	
 //gaussFilter
@@ -24,7 +24,7 @@ private:
 	void initGaussTemplates();
 	int gaussTemplateSize;
 	int sumWeight;
-
+	int guassThreshold = 1;
 
 	
 };

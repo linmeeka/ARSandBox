@@ -86,10 +86,10 @@ DepthFrame AImageProcessor::pixelFilter(const DepthFrame &depthFrame)
 						if (xi != 0 || yi != 0)
 						{
 							//// 确定操作像素在深度图中的位置
-							//int xSearch = x + xi;
-							//int ySearch = y + yi;
+							int xSearch = x + xi;
+							int ySearch = y + yi;/*
 							int xSearch = depthArrayRowIndex + xi;
-							int ySearch = depthArrayColumnIndex + yi;
+							int ySearch = depthArrayColumnIndex + yi;*/
 							// 检查操作像素的位置是否超过了图像的边界（候选像素在图像的边缘）
 							if(depthFrame.checkInRealMap(xSearch,ySearch))
 							{
@@ -120,7 +120,7 @@ DepthFrame AImageProcessor::pixelFilter(const DepthFrame &depthFrame)
 									// 确定是内外哪个边界内的像素不为零，对相应计数器加一
 									if (yi != 2 && yi != -2 && xi != 2 && xi != -2)
 										innerBandCount++;
-									//else
+									else
 										outerBandCount++;
 								}
 							}
@@ -173,16 +173,24 @@ DepthFrame AImageProcessor::gaussFilter(const DepthFrame &depthFrame)
 			int sumValue = 0;
 			int templateIndex = 0;
 			int mapIndex;
+			int blackPointCount = 0;
 			for (int x = -gaussTemplateSize / 2; x <= gaussTemplateSize / 2; x++)
 			{
 				for (int y = -gaussTemplateSize / 2; y <= gaussTemplateSize / 2; y++)
 				{
 					mapIndex = (i + x)*depthFrame.mapWidth + (j + y);
 					sumValue += depthFrame.depthValue[mapIndex] * gaussTemplate[templateIndex++];
+					if (depthFrame.depthValue[mapIndex] == 0)
+					{
+						blackPointCount++;
+					}
 				}
 			}
 			int index = i*depthFrame.mapWidth + j;
-			resultMap.depthValue[index] = (int)((sumValue*1.0) / (sumWeight*1.0));
+			if (blackPointCount >= guassThreshold)
+				resultMap.depthValue[index] = depthFrame.depthValue[index];
+			else
+				resultMap.depthValue[index] = (int)((sumValue*1.0) / (sumWeight*1.0));
 			
 		}
 	}

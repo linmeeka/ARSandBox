@@ -14,14 +14,13 @@ public:
 	~DepthFrame();
 
 public:
-	const int32 HalfWidth = 320;
-	const int32 HalfLength = 320;
-	const int32 mapLength = 640;
-	const int32 mapHeight = 640;
-	const int32 mapWidth = 640;
-	const int32 realHeight = 480;
-	const int32 sumNumber = 409600;
-	const int32 realSumNumber = 307200;
+	int mapHeight = 512;
+	int mapWidth = 512;
+	int realHeight = 424;
+	int HalfWidth = 256;
+	int HalfLength = 256;
+	int32 sumNumber = 512*512;
+	int32 realSumNumber = 512*424;
 
 	TArray<int> depthValue;
 

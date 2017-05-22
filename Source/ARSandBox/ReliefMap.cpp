@@ -252,7 +252,7 @@ bool ReliefMap::checkCounter(int x, int y, TArray<FColor> &VertexColors, const D
 void ReliefMap::drawContourByThreshold(TArray<FColor> &VertexColors, const DepthFrame &depthFrame)
 {
 	counterFlag.Init(0, depthFrame.sumNumber);
-	for (int i = 0; i < depthFrame.mapLength; i++)
+	for (int i = 0; i < depthFrame.mapHeight; i++)
 	{
 		for (int j = 0; j < depthFrame.mapWidth; j++)
 		{
@@ -260,7 +260,7 @@ void ReliefMap::drawContourByThreshold(TArray<FColor> &VertexColors, const Depth
 				counterFlag[i*depthFrame.mapWidth + j] = 1;
 		}
 	}
-	for (int i = 0; i < depthFrame.mapLength; i++)
+	for (int i = 0; i < depthFrame.mapHeight; i++)
 	{
 		for (int j = 0; j < depthFrame.mapWidth; j++)
 		{

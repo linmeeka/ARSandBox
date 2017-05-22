@@ -19,8 +19,13 @@ public:
 	virtual void DrawHUD() override;
 	virtual void BeginPlay() override;
 private:
-	int mapWidth = 640;
-	int realHeight = 480;
+	//int mapWidth = 640;
+	//int realHeight = 480;
+	const int mapHeight = 512;
+	const int mapWidth = 512;
+	const int realHeight = 424;
+	const int HalfWidth = 256;
+	const int HalfLength = 256;
 	bool initFlag = false;
 	TArray<int> depthFrame;
 	
